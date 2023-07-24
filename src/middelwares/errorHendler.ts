@@ -1,5 +1,7 @@
+import express, { Request, Response , NextFunction} from "express";
+
 const errorHendlerMiddleware = () => {
-    return async (res, next) => {
+    return async (res: Response, next: NextFunction) => {
         try {
             console.log("errorHendler ELO!")
             return await next()

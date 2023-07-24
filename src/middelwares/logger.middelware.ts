@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import winston from 'winston'
+import express, { Request, Response, NextFunction } from "express";
+
 // var moment = require('moment');
 // const { format } = require('sequelize/types/utils');
 // var today = moment().format('YYYY-MM-DD');
@@ -21,7 +23,7 @@ const logger = winston.createLogger({
     ],
 });
 
-function loggerMiddelware(req, res, next) {
+function loggerMiddelware(req: Request, res: Response, next: NextFunction) {
     const requestId = uuidv4()
     console.log(requestId)
     res.locals.logger = requestId

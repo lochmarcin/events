@@ -1,7 +1,9 @@
+import express, { Request, Response, NextFunction } from "express";
+
 import { validateToken } from '../serices/jwt_service'
 import { ReqNotValidated } from '../exceptions/reqNotValidated.exception'
 
-const tokenValidator = async (req, res, next) => {
+const tokenValidator = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.headers.authorization.split(' ')[1]
 

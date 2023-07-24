@@ -15,7 +15,7 @@ router.get("/", tokenValidator, async (req, res) => {
 
 router.get("/:userId", async (req, res) => {
     try {
-        const user = await getOneUser(req.params.userId)
+        const user = await getOneUser(Number(req.params.userId))
         res.status(200).send(user)
     } catch (error) {
         res.status(error.code).send(error.returnMessage)

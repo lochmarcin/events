@@ -1,13 +1,13 @@
 // const User = require('../helpers/models/users')
-import { User } from '../migrations/models/user'
+import { User } from '../migrations_ts/user.model'
 import { UserAlreadyExist } from '../exceptions/userAlreadyExist.exception'
 import { UserNotFound } from '../exceptions/UserNotFound.exeption'
 
-const createUserRecord = async (email: string, name: string, surname: string, password: string, res: Response) => {
+const createUserRecord = async (email: string, name: string, surname: string, password: string) => {
     try {
         const user = await User.create({ email, password, name, surname })
         return user.id
-    } catch (error:any) {
+    } catch (error: any) {
         if (error.parent.code === '23505') {
             // console.log(res.locals.logger)
             console.log('23505')
@@ -58,8 +58,12 @@ const getOneUserInfoRecord = async (userId: number) => {
 
 const changeUserDataRecord = async (userId: number, name: string, surname: string) => {
     // console.log(name, surname)
-    const changes:Object = {}
-    console.log()
+    interface Changes {
+        name?:string,
+        surname?:string
+    }
+    const changes: Changes = {}
+    
     if (name) changes.name = name
     if (surname) changes.surname = surname
     console.log(changes)
