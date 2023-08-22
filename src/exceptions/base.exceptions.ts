@@ -1,9 +1,9 @@
 import { logger } from "../middelwares/loggerEW.middleware"
 
 class BaseException extends Error {
-    private code: Number
-    private returnMessage
-    constructor(code: Number, message: String) {
+    private code: number
+    private returnMessage: string
+    constructor(code: number, message: string) {
         super(`${code}: ${message}`)
         this.code = code
         this.returnMessage = message

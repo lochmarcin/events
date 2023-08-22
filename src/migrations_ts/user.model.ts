@@ -1,26 +1,47 @@
-import db from "./index"
+import Sequelize from "sequelize"
+import sequelize from "./index"
+import PublisherUserRelation from "./publisherUserRelation.model"
+import EventUserRelation from "./eventUserRelation.model"
 
 
-const User = db.sequelize.define('user', {
+const User = sequelize.define('user', {
+    id:{
+        type: Sequelize.INTEGER,
+        unique: true,
+        autoIncrement: true,
+        primaryKey: true
+    },
     email: {
-        type: db.Sequelize.STRING,
-        unique: true
+        type: Sequelize.STRING,
+        unique: true,
     },
     name: {
-        type: db.Sequelize.STRING
+        type: Sequelize.STRING
     },
     surname: {
-        type: db.Sequelize.STRING
+        type: Sequelize.STRING
     },
     password: {
-        type: db.Sequelize.STRING
+        type: Sequelize.STRING
     },
     createdAt: {
-        type: db.Sequelize.DATE
+        type: Sequelize.DATE
     },
     updatedAt: {
-        type: db.Sequelize.DATE
+        type: Sequelize.DATE
     }
 })
 
-export { User }
+User.belongsTo(PublisherUserRelation,{
+    foreignKey: {
+        name: 'user_id'
+    }
+})
+
+User.belongsTo(EventUserRelation,{
+    foreignKey: {
+        name: 'user_id'
+    }
+})
+
+export = User 

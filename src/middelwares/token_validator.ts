@@ -3,9 +3,12 @@ import express, { Request, Response, NextFunction } from "express";
 import { validateToken } from '../serices/jwt_service'
 import { ReqNotValidated } from '../exceptions/reqNotValidated.exception'
 
-const tokenValidator = async (req: Request, res: Response, next: NextFunction) => {
+const tokenValidator = async (req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
-        const token = req.headers.authorization.split(' ')[1]
+        const token = req.headers.authorization?.split(' ')[1]
+        if(!token){
+            throw new ReqNotValidated()
+        }
 
         if (token && await validateToken(token)) {
             console.log("User validated !")

@@ -1,10 +1,14 @@
-import express from "express"
+// import express from "express"
 // import router  from express.Router()
-import { router } from '../router';
+import express, { Request, Response, NextFunction } from "express";
+
+// import router from './../router';
 import { createUser, validateUser } from "../serices/user.service"
 import { tokenValidator } from "../middelwares/token_validator"
 
-router.post("/register", async (req, res) => {
+const router = express.Router();
+
+router.post("/register", async (req: Request, res: Response) => {
     try {
         const token = await createUser(req, res)
         res.status(200).send(token)
@@ -15,11 +19,12 @@ router.post("/register", async (req, res) => {
     // console.log(token)
 })
 
-router.post("/validate", tokenValidator, (req, res) => {
+
+router.post("/validate", tokenValidator, (req: Request, res: Response) => {
 
 })
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req: Request, res: Response) => {
     try {
         const token = await validateUser(req, res)
         res.send(token)

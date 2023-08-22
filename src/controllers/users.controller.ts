@@ -1,10 +1,12 @@
-import express from "express"
+import express, { Request, Response, NextFunction } from "express";
 // import router = express.Router()
-import { router } from '../router';
+// import router from '../router';
 import { tokenValidator } from "../middelwares/token_validator"
 import { getAllUsers, getOneUser, changeUserData, deleteUser } from "../serices/users.service"
 
-router.get("/", tokenValidator, async (req, res) => {
+const router = express.Router();
+
+router.get("/", tokenValidator, async (req: Request, res: Response) => {
     try {
         const users = await getAllUsers()
         res.status(200).json(users)
@@ -13,7 +15,7 @@ router.get("/", tokenValidator, async (req, res) => {
     }
 })
 
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", async (req: Request, res: Response) => {
     try {
         const user = await getOneUser(Number(req.params.userId))
         res.status(200).send(user)
@@ -22,7 +24,7 @@ router.get("/:userId", async (req, res) => {
     }
 })
 
-router.put("/:userId", tokenValidator, async (req, res) => {
+router.put("/:userId", tokenValidator, async (req: Request, res: Response) => {
     try {
         const user = await changeUserData(req)
         res.status(200).send(user)
@@ -31,7 +33,7 @@ router.put("/:userId", tokenValidator, async (req, res) => {
     }
 })
 
-router.delete("/:userId", tokenValidator, async (req, res) => {
+router.delete("/:userId", tokenValidator, async (req: Request, res: Response) => {
     try {
         const user = await deleteUser(req)
         res.status(204).send("User properly deleted")

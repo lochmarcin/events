@@ -1,6 +1,6 @@
-import express from "express"
+import express, {Request,  Response, NextFunction } from "express"
 import bodyParser from "body-parser"
-import { router } from "./router"
+import router from "./router"
 // import { loggerMiddelware, logger } from "./middelwares/logger.middelware"
 import { connectionTest } from './helpers/connection.helper'
 import { errorHendlerMiddleware } from "./middelwares/errorHendler"
@@ -48,7 +48,7 @@ app.listen(process.env.PORT, () => {
 
 app.use("/", router)
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
     res.sendStatus(404)
 })
 

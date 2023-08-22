@@ -1,11 +1,33 @@
 // const User = require('../helpers/models/users')
-import { User } from '../migrations_ts/user.model'
+import User from '../migrations_ts/user.model'
 import { UserAlreadyExist } from '../exceptions/userAlreadyExist.exception'
 import { UserNotFound } from '../exceptions/UserNotFound.exeption'
+import { Forbidden } from '../exceptions/forbidden.exception'
 
-const createUserRecord = async (email: string, name: string, surname: string, password: string) => {
+interface BaseUser {
+    email: string,
+    name: string,
+    surname: string
+}
+
+interface UserId {
+    id: number
+}
+
+interface UserPassword {
+    password: string
+}
+
+export type CreateUser = BaseUser & UserPassword
+export type DBUser = BaseUser & UserId & UserPassword
+export type APIUser = BaseUser & UserId
+
+const createUserRecord = async (newUser: CreateUser): Promise<UserId> => {
+    // const createUserRecord = async(newUser.email: string, name: string, surname: string, password: string) => {
+
     try {
-        const user = await User.create({ email, password, name, surname })
+        const user = await User.create(newUser)
+        console.log(user)
         return user.id
     } catch (error: any) {
         if (error.parent.code === '23505') {
@@ -14,36 +36,52 @@ const createUserRecord = async (email: string, name: string, surname: string, pa
 
             throw new UserAlreadyExist()
         }
+        else {
+            throw new Forbidden('Forbidden')
+        }
     }
 }
 
-const getUserRecord = async (email: string) => {
+const getUserRecord = async (email: string): Promise<DBUser> => {
 
     try {
-        const user = await User.findOne({ where: { email: email } })
+        const user = await User.findOne({
+            where: {
+                email: email
+            },
+            raw: true,
+            attributes: [
+                "id",
+                "email",
+                "name",
+                "surname",
+                "password"
+            ]
+        })
         console.log(user)
-
         return user
     } catch (error) {
         console.log(error)
+        throw new UserNotFound()
     }
 }
 
-const getAllUsersRecords = async () => {
-    try {
-        const users = await User.findAll({
-            attributes: ["id",
-                "email",
-                "name",
-                "surname"]
-        })
+const getAllUsersRecords = async (): Promise<APIUser[]> => {
+
+    const users = await User.findAll({
+        attributes: ["id",
+            "email",
+            "name",
+            "surname"]
+    })
+    if (!users)
+        throw new UserNotFound()
+    else
         return users
-    } catch (error) {
-        console.log(error)
-    }
+
 }
 
-const getOneUserInfoRecord = async (userId: number) => {
+const getOneUserInfoRecord = async (userId: number): Promise<APIUser> => {
     const user = await User.findOne({
         where: {
             id: userId
@@ -56,25 +94,18 @@ const getOneUserInfoRecord = async (userId: number) => {
         return user
 }
 
-const changeUserDataRecord = async (userId: number, name: string, surname: string) => {
-    // console.log(name, surname)
-    interface Changes {
-        name?:string,
-        surname?:string
-    }
-    const changes: Changes = {}
-    
-    if (name) changes.name = name
-    if (surname) changes.surname = surname
-    console.log(changes)
+const changeUserDataRecord = async (userId: number, changeUser: Partial<BaseUser>) :Promise<APIUser> => {
 
-    const user = await User.update(changes, {
+    console.log(changeUser)
+    console.log(userId)
+
+    const user = await User.update(changeUser, {
         where: {
             "id": userId
         },
         returning: true
     })
-    // console.log(user[1])
+    console.log(user[1])
     let newUser = user[1][0]
     if (!newUser) {
         throw new UserNotFound()
@@ -84,7 +115,35 @@ const changeUserDataRecord = async (userId: number, name: string, surname: strin
     }
 }
 
-const deleteUserRecord = async (userId: number) => {
+// const changeUserDataRecord = async (userId: number, name: string, surname: string) => {
+//     // console.log(name, surname)
+//     interface Changes {
+//         name?: string,
+//         surname?: string
+//     }
+//     const changes: Changes = {}
+
+//     if (name) changes.name = name
+//     if (surname) changes.surname = surname
+//     console.log(changes)
+
+//     const user = await User.update(changes, {
+//         where: {
+//             "id": userId
+//         },
+//         returning: true
+//     })
+//     // console.log(user[1])
+//     let newUser = user[1][0]
+//     if (!newUser) {
+//         throw new UserNotFound()
+//     }
+//     else {
+//         return newUser
+//     }
+// }
+
+const deleteUserRecord = async (userId: number): Promise<void> => {
     const user = await User.destroy({
         where: {
             id: userId
@@ -102,5 +161,6 @@ export {
     getAllUsersRecords,
     getOneUserInfoRecord,
     changeUserDataRecord,
-    deleteUserRecord
+    deleteUserRecord,
+    UserId
 }

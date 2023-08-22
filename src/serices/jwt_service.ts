@@ -1,7 +1,10 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import { UserId, DBUser } from "../repositories/users.repository"
+import { BaseException } from "../exceptions/base.exceptions"
+import { Forbidden } from '../exceptions/forbidden.exception'
 
 
-const createToken = async (userId: number) => {
+const createToken = async (userId: Partial<DBUser> ): Promise<string> => {
     console.log("User id from parametr: " + userId)
     const payload = {
         userId: userId
@@ -13,6 +16,7 @@ const createToken = async (userId: number) => {
         return token
     } catch (err) {
         console.log("createToken() " + err)
+        throw new BaseException(500,`Internal Error`)
     }
 }
 
@@ -22,8 +26,9 @@ const validateToken = async (token: string) => {
         console.log(decoded)
         return decoded
     } catch (err) {
-        console.log("Error at veryfi jwt: " + err)
-        return null
+        throw new Forbidden("Forbidden")
+        // console.log("Error at veryfi jwt: " + err)
+        // return null
     }
 
 }
