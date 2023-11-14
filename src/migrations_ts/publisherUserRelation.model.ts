@@ -1,9 +1,12 @@
-import Sequelize, { Deferrable } from "sequelize"
+import Sequelize from "sequelize"
 import sequelize from "./index"
-import User from "./user.model"
-import Publishers from "./publishers.model"
+// import User from "./user.model"
+// import Publishers from "./publishers.model"
 
-const PublisherUserRelation = sequelize.define("publisherUserRelations",{
+// import db from "./index"
+
+
+const PublisherUserRelation = sequelize.define("publisher_user_relations",{
     id:{
         type: Sequelize.INTEGER,
         unique: true,
@@ -12,24 +15,15 @@ const PublisherUserRelation = sequelize.define("publisherUserRelations",{
     },
     user_id:{
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: User,
-            key: 'id',
-            deferrable: Deferrable.INITIALLY_IMMEDIATE
-        }
+        allowNull: false
     },
-    pubilsher_id:{
+    publisher_id:{
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: Publishers,
-            key: 'id',
-            deferrable: Deferrable.INITIALLY_IMMEDIATE
-        }
+        allowNull: false
+
     }
 })
 
-PublisherUserRelation.
+
 
 export = PublisherUserRelation

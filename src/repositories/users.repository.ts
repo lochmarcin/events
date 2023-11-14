@@ -29,7 +29,7 @@ const createUserRecord = async (newUser: CreateUser): Promise<UserId> => {
         const user = await User.create(newUser)
         console.log(user)
         return user.id
-    } catch (error: any) {
+    } catch (error) {
         if (error.parent.code === '23505') {
             // console.log(res.locals.logger)
             console.log('23505')

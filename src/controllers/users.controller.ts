@@ -36,7 +36,7 @@ router.put("/:userId", tokenValidator, async (req: Request, res: Response) => {
 router.delete("/:userId", tokenValidator, async (req: Request, res: Response) => {
     try {
         const user = await deleteUser(req)
-        res.status(204).send("User properly deleted")
+        res.sendStatus(204)
     } catch (error) {
         console.log(error)
         res.status(error.code).send(error.returnMessage)

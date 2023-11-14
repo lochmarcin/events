@@ -5,6 +5,7 @@ import { BaseException } from '../exceptions/base.exceptions'
 import { getAllUsersRecords, getOneUserInfoRecord, changeUserDataRecord, deleteUserRecord, APIUser } from '../repositories/users.repository'
 import { validateToken } from "./jwt_service"
 import { JwtPayload } from "jsonwebtoken";
+import { JwtUserDB } from "../middelwares/token_validator";
 
 
 const getAllUsers = async (): Promise<APIUser[]> => {
@@ -26,11 +27,14 @@ const deleteUser = async (req: Request): Promise<void> => {
         const token = req.headers.authorization?.split(' ')[1]
 
 
-        const loggedUser: JwtPayload = await validateToken(token) as Object
+        const loggedUser: JwtPayload = await validateToken(token) as JwtUserDB
+        console.log("loggedUser")
+        console.log(loggedUser)
 
         const userIdToDelete = Number(req.params.userId)
         if (loggedUser) {
-            if (loggedUser.userId !== userIdToDelete) {
+            console.log(`${loggedUser.id} == ${userIdToDelete}`)
+            if (loggedUser.id !== userIdToDelete) {
                 throw new Forbidden("Tried to delete other user than youself")
             }
             else {

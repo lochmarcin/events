@@ -6,15 +6,22 @@ import { createToken } from '../serices/jwt_service'
 import { tokenValidator } from '../middelwares/token_validator'
 import { InvalidCredentialsException } from "../exceptions/invalid.credentials.exception"
 
-const createUser = async (req: Request, res: Response): Promise<string> => {
+import { APIUser } from "../repositories/users.repository";
+
+
+const createUser = async (req: Request, res: Response): Promise<Partial<APIUser>> => {
+    // const createUser = async (req: Request, res: Response): Promise<number> => {
+
     const { email, password, name, surname } = req.body
     const hash = await bcrypt.hash(password, 10)
 
-    const id = await createUserRecord({ email, name, surname, password: hash })
+    const Userid = await createUserRecord({ email, name, surname, password: hash })
     // const id = await createUserRecord(email, name, surname, hash)
-    console.log("id usera otrzymane z bazy: " + id)
-    const token = await createToken(id)
-    return token
+    console.log("id usera otrzymane z bazy: " + Userid)
+    // console.log(typeof (Userid))
+    // const token = await createToken(id)
+    return Userid
+
 }
 
 const validateUser = async (req: Request, res: Response): Promise<string> => {

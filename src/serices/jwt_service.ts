@@ -2,33 +2,34 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { UserId, DBUser } from "../repositories/users.repository"
 import { BaseException } from "../exceptions/base.exceptions"
 import { Forbidden } from '../exceptions/forbidden.exception'
+import { JwtUserDB } from '../middelwares/token_validator'
 
+// interface jwtDbUser {
+//     iat: Date,
+//     exp: Date
+// }
 
-const createToken = async (userId: Partial<DBUser> ): Promise<string> => {
+// type JwtUserDB = DBUser & jwtDbUser
+
+const createToken = async (userId: Partial<DBUser>): Promise<string> => {
     console.log("User id from parametr: " + userId)
-    const payload = {
-        userId: userId
-    }
-    console.log("Payload: " + payload)
-
+    console.log(userId)
+  
     try {
-        const token = await jwt.sign(payload, process.env.SECRET, { expiresIn: '1d' })
+        const token = jwt.sign(userId , process.env.SECRET, { expiresIn: 60 * 60 })
         return token
     } catch (err) {
         console.log("createToken() " + err)
-        throw new BaseException(500,`Internal Error`)
+        throw new BaseException(500, `Internal Error`)
     }
 }
 
-const validateToken = async (token: string) => {
+const validateToken = async (token: string): Promise<JwtUserDB>=> {
     try {
-        const decoded = await jwt.verify(token, process.env.SECRET)
-        console.log(decoded)
+        const decoded = await jwt.verify(token, process.env.SECRET) as JwtUserDB
         return decoded
     } catch (err) {
         throw new Forbidden("Forbidden")
-        // console.log("Error at veryfi jwt: " + err)
-        // return null
     }
 
 }

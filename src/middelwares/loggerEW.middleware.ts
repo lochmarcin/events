@@ -1,18 +1,24 @@
-import winston from 'winston'
 import express, { Request, Response } from "express";
 
 import { createLogger, transports, format, level } from 'winston'
 // import { combine, timestamp, label, json, prettyPrint } from format
+import { CustomRequest } from "../interfaces/customRequest.interface"
+
 import { v4 as uuidv4 } from 'uuid'
 import { NextFunction } from 'express'
 
-let reqID
 const logFolder = './logs/'
+
+
 
 const loggerTrasports = [
     new transports.File({
         level: 'info',
-        filename: `${logFolder}logs.log`
+        filename: `${logFolder}info.log`
+    }),
+    new transports.File({
+        level: 'warn',
+        filename: `${logFolder}warning.log`
     }),
     new transports.File({
         level: 'error',
@@ -22,48 +28,28 @@ const loggerTrasports = [
 ]
 
 
-const requestLoggerTrasports = [
-    new transports.File({
-        level: 'warn',
-        filename: `${logFolder}RequestWarning.log`
-    }),
-    new transports.File({
-        level: 'error',
-        filename: `${logFolder}RequestError.log`
-    })
-]
-
-if (process.env.NODE_ENV !== 'production') {
-    loggerTrasports.push(
-        new transports.Console()
-    )
-
-    requestLoggerTrasports.push(
-        new transports.File({
-            level: 'info',
-            filename: `${logFolder}RequestInfo.log`
-        })
-    )
-}
+// if (process.env.NODE_ENV !== 'production') {
+//     loggerTrasports.push(
+//         new transports.Console()
+//     )
+// }
 
 
 
 let logger = createLogger({
     transports: loggerTrasports,
     format: format.combine(
-        // format.label({label : `${reqID}`}),
-        format.label({ label: uuidv4() }),
         format.timestamp(),
         format.json(),
         format.prettyPrint()
     )
 })
 
-function loggerMiddelware(req: Request, res: Response, next: NextFunction) {
+
+function loggerMiddelware(req: CustomRequest, res: Response, next: NextFunction): void {
     const requestId = uuidv4()
-    // console.log(requestId)
-    reqID = requestId
-    console.log(reqID)
+
+    req.RequestId = requestId
 
     res.set('X-Request-Id', requestId)
 
