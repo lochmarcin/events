@@ -3,6 +3,13 @@ import User from '../migrations_ts/user.model'
 import { UserAlreadyExist } from '../exceptions/userAlreadyExist.exception'
 import { UserNotFound } from '../exceptions/UserNotFound.exeption'
 import { Forbidden } from '../exceptions/forbidden.exception'
+import { client } from '../helpers/redis.connection.helper'
+import { BaseException } from '../exceptions/base.exceptions'
+import { Console } from 'console'
+
+
+
+
 
 interface BaseUser {
     email: string,
@@ -22,12 +29,37 @@ export type CreateUser = BaseUser & UserPassword
 export type DBUser = BaseUser & UserId & UserPassword
 export type APIUser = BaseUser & UserId
 
+
+const cacheUsers = async ():Promise<void> => {
+    const users = await User.findAll()
+    client.set('users', JSON.stringify(users))
+} 
+
+const cacheUsersData = async (users:APIUser[]):Promise<void> => {
+    client.set('users', JSON.stringify(users))
+} 
+
+// const getCacheUsers = async ():Promise<APIUser[]> =>{
+//     const users = await client.get('users')
+//     if(!users){
+//         console.log("no users in cache!")
+//         throw new BaseException(500, "no users in cache!")
+//     }
+//     console.log("Cache Hit - Users from cache!")
+//     return JSON.parse(users)
+// }
+const getCacheUsers = async () =>{
+    const users = await client.get('users')  
+    return users? JSON.parse(users) : null
+}
+
 const createUserRecord = async (newUser: CreateUser): Promise<UserId> => {
     // const createUserRecord = async(newUser.email: string, name: string, surname: string, password: string) => {
-
+    client.del('users')
     try {
         const user = await User.create(newUser)
         console.log(user)
+        // cacheUsers()
         return user.id
     } catch (error) {
         if (error.parent.code === '23505') {
@@ -68,6 +100,12 @@ const getUserRecord = async (email: string): Promise<DBUser> => {
 
 const getAllUsersRecords = async (): Promise<APIUser[]> => {
 
+    const usersFromCache = await getCacheUsers()
+    if(usersFromCache){
+        console.log("Cache Hit - Users from cache!")
+        return usersFromCache
+    }
+
     const users = await User.findAll({
         attributes: ["id",
             "email",
@@ -76,8 +114,10 @@ const getAllUsersRecords = async (): Promise<APIUser[]> => {
     })
     if (!users)
         throw new UserNotFound()
-    else
+    else{
+        cacheUsersData(users)
         return users
+    }
 
 }
 

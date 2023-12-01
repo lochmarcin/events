@@ -14,20 +14,30 @@ import { JwtUserDB } from '../middelwares/token_validator'
 const createToken = async (userId: Partial<DBUser>): Promise<string> => {
     console.log("User id from parametr: " + userId)
     console.log(userId)
-  
+
     try {
-        const token = jwt.sign(userId , process.env.SECRET, { expiresIn: 60 * 60 })
-        return token
+        if (!process.env.SECRET) {
+            throw new Forbidden()
+        }
+        else {
+            const token = jwt.sign(userId, process.env.SECRET, { expiresIn: 60 * 60 })
+            return token
+        }
     } catch (err) {
         console.log("createToken() " + err)
         throw new BaseException(500, `Internal Error`)
     }
 }
 
-const validateToken = async (token: string): Promise<JwtUserDB>=> {
+const validateToken = async (token: string): Promise<JwtUserDB> => {
     try {
-        const decoded = await jwt.verify(token, process.env.SECRET) as JwtUserDB
-        return decoded
+        if (!process.env.SECRET) {
+            throw new Forbidden()
+        }
+        else {
+            const decoded = await jwt.verify(token, process.env.SECRET) as JwtUserDB
+            return decoded
+        }
     } catch (err) {
         throw new Forbidden("Forbidden")
     }

@@ -31,7 +31,13 @@ const User = sequelize.define("user", {
   },
   updatedAt: {
     type: Sequelize.DATE,
-  },
+  }
+}, {
+  hooks: {
+    beforeFind: () => {
+      console.log("hooks: => beforeFind ELO !!!")
+    }
+  }
 });
 
 User.hasMany(EventUserRelation, {

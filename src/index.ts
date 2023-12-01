@@ -1,4 +1,4 @@
-import express, {Request,  Response, NextFunction } from "express"
+import express, { Request, Response, NextFunction } from "express"
 import bodyParser from "body-parser"
 import router from "./router"
 // import { loggerMiddelware, logger } from "./middelwares/logger.middelware"
@@ -6,6 +6,8 @@ import { connectionTest } from './helpers/connection.helper'
 import { errorHendlerMiddleware } from "./middelwares/errorHendler"
 import expressWinston from "express-winston"
 import { logger, loggerMiddelware } from './middelwares/loggerEW.middleware'
+
+import { checkRedisConnection } from './helpers/redis.connection.helper'
 
 const app = express()
 app.use(loggerMiddelware)
@@ -27,24 +29,8 @@ app.listen(process.env.PORT, () => {
     logger.info(`App running at port: ${process.env.PORT}`)
 })
 
-// DATABASE CONNECTION TEST
-// db.connectionTest()
 
-// app.use(expressWinston.logger({
-//     winstonInstance: logger,
-//     statusLevels: true
-// }))
-// expressWinston.requestWhitelist.push('body')
-// expressWinston.responseWhitelist.push('body')
-// expressWinston.responseWhitelist.push('headers')
-
-
-
-
-// app.use(expressWinston.errorLogger({
-//     winstonInstance: logger,
-// }))
-
+checkRedisConnection()
 
 app.use("/", router)
 

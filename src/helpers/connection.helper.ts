@@ -12,10 +12,10 @@ import { logger } from "../middelwares/loggerEW.middleware"
 import sequelize from '../migrations_ts/index'
 
 
-import Events from "../migrations_ts/events.model";
-import Publishers from "../migrations_ts/publishers.model";
-import EventUserRelation from "../migrations_ts/eventUserRelation.model";
-import PublisherUserRelation from "../migrations_ts/publisherUserRelation.model";
+// import Events from "../migrations_ts/events.model";
+// import Publishers from "../migrations_ts/publishers.model";
+// import EventUserRelation from "../migrations_ts/eventUserRelation.model";
+// import PublisherUserRelation from "../migrations_ts/publisherUserRelation.model";
 
 
 const connectionTest = async (): Promise<void> => {
