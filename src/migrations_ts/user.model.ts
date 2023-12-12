@@ -4,6 +4,9 @@ import EventUserRelation from "./eventUserRelation.model";
 import PublisherUserRelation from "./publisherUserRelation.model";
 import Publishers from "./publishers.model";
 
+import { StopExecQuery } from "../exceptions/StopExecQuery.exception";
+import { APIUser } from "../repositories/users.repository"
+
 // import db from "./index"
 
 const User = sequelize.define("user", {
@@ -34,8 +37,11 @@ const User = sequelize.define("user", {
   }
 }, {
   hooks: {
-    beforeFind: () => {
-      console.log("hooks: => beforeFind ELO !!!")
+    beforeFind: (options: APIUser) => {
+      // console.log("hooks: => beforeFind ELO !!!")
+      // console.log(options)
+      // return "Dupa" 
+      // throw new StopExecQuery()
     }
   }
 });
